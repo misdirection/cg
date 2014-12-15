@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FAE5E67F-B9ED-4C67-9CBB-69A228B65B81}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>gloostmath</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)../../lib/Release/</OutDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)../../lib/Debug/</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)../../contrib/gloostmath/src; $(SolutionDir)../../include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <OutputFile>$(SolutionDir)../../lib/Debug/gloostmath.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)../../contrib/gloostmath/src; $(SolutionDir)../../include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <OutputFile>$(SolutionDir)../../lib/Release/gloostmath.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\BitMask.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\BoundingBox.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\BoundingVolume.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Dcs.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Frustum.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\glErrorUtil.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\gloostConfig.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\gloostGlUtil.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\gloostHelper.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\gloostMath.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Material.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Matrix.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\MatrixStack.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Mesh.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\MeshLoader.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\ObjLoader.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\ObjMatFile.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Plane.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Point3.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Quaternion.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Ray.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\SharedResource.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\UniformTypes.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Vector2.h" />
+    <ClInclude Include="..\..\..\contrib\gloostmath\src\Vector3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\BitMask.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\BoundingBox.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\BoundingVolume.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Dcs.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Frustum.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\glErrorUtil.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Material.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Matrix.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\MatrixStack.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Mesh.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\MeshLoader.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\ObjLoader.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\ObjMatFile.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Plane.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Point3.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Quaternion.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Ray.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\SharedResource.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\UniformTypes.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Vector2.cpp" />
+    <ClCompile Include="..\..\..\contrib\gloostmath\src\Vector3.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
