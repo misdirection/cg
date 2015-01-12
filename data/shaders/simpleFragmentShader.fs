@@ -69,6 +69,7 @@ void main(void)
 
     out_Color = normalize( (passed_normal + 1.0) / 2.0);
     out_Color = vec4(PlanetColor, 1.0);
+
     vec3 texture_Color = texture2D(colorTexture, passed_texture_coordinates).xyz;
 
     if(useToonShader == 0)

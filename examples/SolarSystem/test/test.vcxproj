@@ -100,6 +100,8 @@
     <ClInclude Include="TextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\data\shaders\screenQuadFragmentShader.fs" />
+    <None Include="..\..\..\data\shaders\screenQuadVertexShader.vs" />
     <None Include="..\..\..\data\shaders\simpleFragmentShader.fs" />
     <None Include="..\..\..\data\shaders\simpleVertexShader.vs" />
     <None Include="..\..\..\data\shaders\starOrbitFragmentShader.fs" />

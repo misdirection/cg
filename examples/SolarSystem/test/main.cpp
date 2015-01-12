@@ -25,7 +25,7 @@ gloost::Mesh* mesh = 0;
 // loader for the wavefront *.obj file format
 #include <ObjLoader.h>
 
-#include <ctime>
+#include <ctime> 
 #include <cstdlib> //rand and srand
 
 #include "TextureLoader.h"
@@ -57,6 +57,9 @@ unsigned planetColorUniformLocation = 0;
 unsigned useToonShaderUniformLocation = 0;
 unsigned colorTextureUniformLocation = 0;
 unsigned normalTextureUniformLocation = 0;
+unsigned useGreyScaleUniformLocation = 0;
+unsigned useMirrorUniformLocation = 0;
+
 //handles for all sort of geometry objects
 unsigned vertexArrayObject = 0;
 unsigned vertexBufferObject = 0;
@@ -95,6 +98,8 @@ unsigned skySphereColorTexture = 0;
 unsigned skySphereNormalTexture = 0;
 
 bool useToonShader = 0;
+int useGreyScale = 0;
+int useMirror = 0;
 //the three different matrices for projection, viewing and model transforming
 
 TransformationStack modelTransformationStack;
@@ -150,11 +155,35 @@ unsigned numVerticesInOrbit = 360;
 
 /////////////////////////////
 
+unsigned renderFBO = 0; //frame buffer object handle
+unsigned renderColorBuffer = 0; //texture handle for color attachment
+unsigned renderDepthBuffer = 0; //texture handle for depth attachment
+unsigned screenQuadVertexArrayObject = 0; //VAO for screenquad
+unsigned screenQuadVertexBufferObject = 0; //VBO for screenquad
+unsigned screenQuadShaderProgram = 0; //textured fs quad shader
+unsigned screenQuadVertexShader = 0; //corresponding vertex shader
+unsigned screenQuadFragmentShader = 0; //corresponding fragment shad.
+//uniform location for the texture of the first rendering pass
+unsigned screenQuadShaderColorTextureUniformLocation = 0;
+//uniform location for screen dimensions (windowWidth & windowHeight)
+unsigned screenQuadShaderScreenDimensionsUniformLocation = 0;
+
+
+float screenQuadGeometry[] =
+{
+	//first triangle
+	-1.0f, 1.0f, 0.0f, //#######
+	1.0f, 1.0f, 0.0f, //####
+	-1.0f, -1.0f, 0.0f, //##
+	//second triangle
+	-1.0f, -1.0f, 0.0f, // ##
+	1.0f, 1.0f, 0.0f, // ####
+	1.0f, -1.0f, 0.0f // ######
+};
 
 
 int main(int argc, char* argv[])
 {
-
 	initialize(argc, argv);
 
 	//start the glut event system
@@ -170,6 +199,8 @@ int main(int argc, char* argv[])
 //called every frame this functions draw
 void draw(void)
 {
+
+
 
 	int now = glutGet(GLUT_ELAPSED_TIME);
 
@@ -189,7 +220,7 @@ void draw(void)
 
 	//translation
 	float distanceConstant = 10.0f;
-	
+
 	float sunTranslation = 0.0 * distanceConstant;
 	float mercuryTranslation = 0.4 * distanceConstant;
 	float venusTranslation = 0.7 * distanceConstant;
@@ -214,6 +245,12 @@ void draw(void)
 	float planetColor[] = { 0.0, 0.0, 0.0 };
 
 	//////////////////////////////////////////////////////////////////////////
+	//Preparations for PASS 1
+	glBindFramebuffer(GL_FRAMEBUFFER, renderFBO);
+	glClearColor(0.0, 0.0, 0.0, 1.0); //specify clear color for color attachments
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//PUT YOUR SOLAR SYSTEM RENDER CODE HERE
+
 
 	glUseProgram(shaderProgram);
 
@@ -229,7 +266,6 @@ void draw(void)
 	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
 	glUniform1i(useToonShaderUniformLocation, useToonShader);
-
 	glUniform1i(colorTextureUniformLocation, 0);
 	glUniform1i(normalTextureUniformLocation, 1);
 
@@ -269,7 +305,7 @@ void draw(void)
 	modelTransformationStack.pushMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(sunScaling)));
 	//rotate it slowly around the y-axis
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(sunRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
-	
+
 	//yellow
 	planetColor[0] = 3.0;
 	planetColor[1] = 3.0;
@@ -316,7 +352,7 @@ void draw(void)
 	modelTransformationStack.pushMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(venusTranslation, 0.0, 0.0)));
 	//rotate it slowly around the y-axis
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(venusRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
-	
+
 	//orange-ish
 	planetColor[0] = 0.8;
 	planetColor[1] = 0.6;
@@ -340,7 +376,7 @@ void draw(void)
 	modelTransformationStack.pushMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(earthTranslation, 0.0, 0.0)));
 	//rotate it slowly around the y-axis
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(earthRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
-	
+
 	//blue
 	planetColor[0] = 0.3;
 	planetColor[1] = 0.3;
@@ -366,7 +402,7 @@ void draw(void)
 	modelTransformationStack.pushMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(earthTranslation, 0.0, 0.0)));
 	//rotate it slowly around the y-axis
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(earthRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
-	
+
 	//grey
 	planetColor[0] = 0.3;
 	planetColor[1] = 0.3;
@@ -390,7 +426,7 @@ void draw(void)
 	modelTransformationStack.pushMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(marsTranslation, 0.0, 0.0)));
 	//rotate it slowly around the y-axis
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(marsRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
-	
+
 	//red-ish
 	planetColor[0] = 0.6;
 	planetColor[1] = 0.4;
@@ -414,7 +450,7 @@ void draw(void)
 	modelTransformationStack.pushMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(jupiterTranslation, 0.0, 0.0)));
 	//rotate it slowly around the y-axis
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(jupiterRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
-	
+
 	//grey
 	planetColor[0] = 0.75;
 	planetColor[1] = 0.75;
@@ -439,7 +475,7 @@ void draw(void)
 	modelTransformationStack.pushMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(saturnTranslation, 0.0, 0.0)));
 	//rotate it slowly around the y-axis
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(saturnRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
-	
+
 	//yellow
 	planetColor[0] = 0.9;
 	planetColor[1] = 0.9;
@@ -463,7 +499,7 @@ void draw(void)
 	modelTransformationStack.pushMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(uranusTranslation, 0.0, 0.0)));
 	//rotate it slowly around the y-axis
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(uranusRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
-	
+
 	//light blue
 	planetColor[0] = 0.7;
 	planetColor[1] = 0.98;
@@ -487,7 +523,7 @@ void draw(void)
 	modelTransformationStack.pushMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(neptuneTranslation, 0.0, 0.0)));
 	//rotate it slowly around the y-axis
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(neptuneRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
-	
+
 	//darker blue
 	planetColor[0] = 0.4;
 	planetColor[1] = 0.5;
@@ -599,6 +635,18 @@ void draw(void)
 	//reset our transformations
 	modelTransformationStack.clear();
 
+	//after drawing the solar system, bind the default framebuffer and
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glUseProgram(screenQuadShaderProgram); //use the fullscreen quad shader
+	//upload all your uniform
+	glUniform2fv(screenQuadShaderScreenDimensionsUniformLocation,1,glm::value_ptr(glm::vec2(windowWidth,windowHeight)));
+	glUniform1i(useGreyScaleUniformLocation, useGreyScale);
+	glUniform1i(useMirrorUniformLocation, useMirror);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, renderColorBuffer);
+	glBindVertexArray(screenQuadVertexArrayObject);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -652,6 +700,19 @@ void keyRelease(unsigned char keyEvent, int x, int y)
 	{
 		useToonShader = 1;
 	}
+	if (keyEvent == '7')
+	{
+		if(useGreyScale == 1){
+			useGreyScale = 0;}
+		else{useGreyScale = 1;}
+	}
+
+	if (keyEvent == '8')
+	{
+		if(useMirror == 1){
+			useMirror = 0;}
+		else{useMirror = 1;}
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -688,7 +749,76 @@ void renderFunction(void)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
+void setupFrameBufferObjects()
+{
+	glGenFramebuffers(1, &renderFBO); //create FBO resource
+	glBindFramebuffer(GL_FRAMEBUFFER, renderFBO); //and set it as curr.
+	glGenTextures(1, &renderColorBuffer); //create a texture resource
 
+	glBindTexture(GL_TEXTURE_2D, renderColorBuffer); //set it as curr.
+	//and set the texture parameter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//allocate texture memory for width*height RGBA8 pixel on the GPU
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, windowWidth, windowHeight,
+		0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+	//bind color attachment to framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+		GL_TEXTURE_2D, renderColorBuffer, 0);
+	//generarete the depth buffer out of your handle
+	glGenRenderbuffers(1, &renderDepthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderDepthBuffer); //bind it
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24,
+		windowWidth, windowHeight);//and allocate the memory
+	//bind depthbuffer as so called renderbuffer to framebuffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+		GL_RENDERBUFFER, renderDepthBuffer);
+	//unbind FBO = set default FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void resizeFBOTextures() //use this code to resize your attachments
+{
+
+	glBindTexture(GL_TEXTURE_2D, renderColorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, windowWidth, windowHeight,
+		0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, renderDepthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24,
+		windowWidth, windowHeight);
+}
+
+void setupScreenQuad()
+{
+	//create V(ertex)A(rray)O(object) which stores the specified attributes of our V(ertex)B(uffer)O(bject)
+	glGenVertexArrays(1, &screenQuadVertexArrayObject);
+	//bind VAO - scope begins
+	glBindVertexArray(screenQuadVertexArrayObject);
+	//create a vertex buffer object
+	glGenBuffers(1, &screenQuadVertexBufferObject);
+	//and bind it as a array buffer target
+	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVertexBufferObject);
+
+	//load data that resides in CPU RAM into video RAM.
+	glBufferData(GL_ARRAY_BUFFER,
+		sizeof(screenQuadGeometry),
+		&(screenQuadGeometry[0]),
+		GL_STATIC_DRAW);
+	//enable vertex attribute at location 0 (compare with vertex shader input)
+	glEnableVertexAttribArray(0);
+	//specify where to read the data for attribute at location 0
+	glVertexAttribPointer(0,
+		3, //3 floats per triangle vertex
+		GL_FLOAT, //datatype
+		GL_FALSE, //should the data be normalized?
+		sizeof(float) * 3, //size of attribute stride for one primitive
+		(GLvoid*)0); //offset in stride
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+//////////////////////////////////////////
 
 void setupShader()
 {
@@ -748,7 +878,26 @@ void setupShader()
 	starOrbitShaderViewMatrixUniformLocation = glGetUniformLocation(starOrbitShaderProgram, "ViewMatrix");
 	starOrbitShaderProjectionMatrixUniformLocation = glGetUniformLocation(starOrbitShaderProgram, "ProjectionMatrix");
 
+	// LOAD AND LINK SHADER
+	screenQuadShaderProgram = glCreateProgram();
+	{
+		//load a shader (of the given type) and compile it in the convenience class 'Shader'
+		screenQuadVertexShader = Shader::loadShader("../../../data/shaders/screenQuadVertexShader.vs", GL_VERTEX_SHADER);
+		screenQuadFragmentShader = Shader::loadShader("../../../data/shaders/screenQuadFragmentShader.fs", GL_FRAGMENT_SHADER);
+		//attach the different shader components to the shader program ...
+		glAttachShader(screenQuadShaderProgram, screenQuadVertexShader);
+		glAttachShader(screenQuadShaderProgram, screenQuadFragmentShader);
+	}
+	//... and compile it
+	glLinkProgram(screenQuadShaderProgram);
+	//program is linked, so we can detach compiled shaders again
+	glDetachShader(screenQuadShaderProgram, screenQuadVertexShader);
+	glDetachShader(screenQuadShaderProgram, screenQuadFragmentShader);
+	screenQuadShaderColorTextureUniformLocation = glGetUniformLocation(screenQuadShaderProgram, "screenQuadColorTexture");
 
+	screenQuadShaderScreenDimensionsUniformLocation = glGetUniformLocation(screenQuadShaderProgram, "screenDimensions");
+	useGreyScaleUniformLocation = glGetUniformLocation(screenQuadShaderProgram, "useGreyScale");
+	useMirrorUniformLocation = glGetUniformLocation(screenQuadShaderProgram, "useMirror");
 }
 
 
@@ -1021,7 +1170,6 @@ void resizeFunction(int Width, int Height)
 	windowWidth = Width;
 	windowHeight = Height;
 	glViewport(0, 0, windowWidth, windowHeight);
-
 	//create a projection matrix 
 	glm::mat4 projectionMatrix = glm::perspective(90.0f, //FOV 60.0°
 		(float)windowWidth / windowHeight, //aspect ratio of the projection
@@ -1037,7 +1185,7 @@ void resizeFunction(int Width, int Height)
 	glUseProgram(starOrbitShaderProgram);
 	glUniformMatrix4fv(starOrbitShaderProjectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUseProgram(0);
-
+	resizeFBOTextures();
 
 }
 
@@ -1136,10 +1284,15 @@ void initialize(int argc, char* argv[])
 
 	//create shaders
 	setupShader();
+
 	//load model and fill buffer objects
 	loadModel();
 	//load all of our textures
 	loadTextures();
+
+	//create FBO 
+	setupFrameBufferObjects();
+	setupScreenQuad();
 }
 
 

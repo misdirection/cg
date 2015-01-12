@@ -1,13 +1,29 @@
-﻿Der Buildvorgang wurde am 12.01.2015 18:47:11 gestartet.
-     1>Projekt "C:\Users\Christian\Source\Repos\cg\examples\SolarSystem\gloostmath\gloostmath.vcxproj" auf Knoten "2", Build Ziel(e).
+﻿Der Buildvorgang wurde am 12.01.2015 20:59:04 gestartet.
+     1>Projekt "C:\Users\Christian\Source\Repos\cg\examples\SolarSystem\gloostmath\gloostmath.vcxproj" auf Knoten "2", Rebuild Ziel(e).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\Users\Christian\Source\Repos\cg\examples\SolarSystem\../../contrib/gloostmath/src /IC:\Users\Christian\Source\Repos\cg\examples\SolarSystem\../../include /Zi /nologo /W0 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\..\contrib\gloostmath\src\Material.cpp ..\..\..\contrib\gloostmath\src\Mesh.cpp ..\..\..\contrib\gloostmath\src\MeshLoader.cpp ..\..\..\contrib\gloostmath\src\ObjLoader.cpp ..\..\..\contrib\gloostmath\src\ObjMatFile.cpp ..\..\..\contrib\gloostmath\src\glErrorUtil.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\Users\Christian\Source\Repos\cg\examples\SolarSystem\../../contrib/gloostmath/src /IC:\Users\Christian\Source\Repos\cg\examples\SolarSystem\../../include /Zi /nologo /W0 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\..\contrib\gloostmath\src\BitMask.cpp ..\..\..\contrib\gloostmath\src\BoundingBox.cpp ..\..\..\contrib\gloostmath\src\BoundingVolume.cpp ..\..\..\contrib\gloostmath\src\Dcs.cpp ..\..\..\contrib\gloostmath\src\Frustum.cpp ..\..\..\contrib\gloostmath\src\glErrorUtil.cpp ..\..\..\contrib\gloostmath\src\Material.cpp ..\..\..\contrib\gloostmath\src\Matrix.cpp ..\..\..\contrib\gloostmath\src\MatrixStack.cpp ..\..\..\contrib\gloostmath\src\Mesh.cpp ..\..\..\contrib\gloostmath\src\MeshLoader.cpp ..\..\..\contrib\gloostmath\src\ObjLoader.cpp ..\..\..\contrib\gloostmath\src\ObjMatFile.cpp ..\..\..\contrib\gloostmath\src\Plane.cpp ..\..\..\contrib\gloostmath\src\Point3.cpp ..\..\..\contrib\gloostmath\src\Quaternion.cpp ..\..\..\contrib\gloostmath\src\Ray.cpp ..\..\..\contrib\gloostmath\src\SharedResource.cpp ..\..\..\contrib\gloostmath\src\UniformTypes.cpp ..\..\..\contrib\gloostmath\src\Vector2.cpp ..\..\..\contrib\gloostmath\src\Vector3.cpp
+         BitMask.cpp
+         BoundingBox.cpp
+         BoundingVolume.cpp
+         Dcs.cpp
+         Frustum.cpp
+         glErrorUtil.cpp
          Material.cpp
+         Matrix.cpp
+         MatrixStack.cpp
          Mesh.cpp
          MeshLoader.cpp
          ObjLoader.cpp
          ObjMatFile.cpp
-         glErrorUtil.cpp
+         Plane.cpp
+         Point3.cpp
+         Quaternion.cpp
+         Ray.cpp
+         SharedResource.cpp
+         UniformTypes.cpp
+         Vector2.cpp
+         Kompilieren...
+         Vector3.cpp
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\Lib.exe /OUT:"C:\Users\Christian\Source\Repos\cg\examples\SolarSystem\../../lib/Release/gloostmath.lib" /NOLOGO /LTCG Release\BitMask.obj
          Release\BoundingBox.obj
@@ -31,8 +47,8 @@
          Release\Vector2.obj
          Release\Vector3.obj
          gloostmath.vcxproj -> C:\Users\Christian\Source\Repos\cg\examples\SolarSystem\../../lib/Release/gloostmath.lib
-     1>Die Erstellung des Projekts "C:\Users\Christian\Source\Repos\cg\examples\SolarSystem\gloostmath\gloostmath.vcxproj" ist abgeschlossen, Build Ziel(e).
+     1>Die Erstellung des Projekts "C:\Users\Christian\Source\Repos\cg\examples\SolarSystem\gloostmath\gloostmath.vcxproj" ist abgeschlossen, Rebuild Ziel(e).
 
 Build erfolgreich.
 
-Verstrichene Zeit 00:00:04.29
+Verstrichene Zeit 00:00:09.01
