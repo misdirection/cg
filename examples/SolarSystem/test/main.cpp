@@ -55,7 +55,8 @@ unsigned normalMatrixUniformLocation = 0;
 
 unsigned planetColorUniformLocation = 0;
 unsigned useToonShaderUniformLocation = 0;
-
+unsigned colorTextureUniformLocation = 0;
+unsigned normalTextureUniformLocation = 0;
 //handles for all sort of geometry objects
 unsigned vertexArrayObject = 0;
 unsigned vertexBufferObject = 0;
@@ -69,18 +70,29 @@ unsigned fragmentShader = 0;
 
 //texture handle
 unsigned sunColorTexture = 0;
-unsigned earthColorTexture = 0;
-unsigned jupiterColorTexture = 0;
-unsigned marsColorTexture = 0;
-unsigned venusColorTexture = 0;
-unsigned saturnColorTexture = 0;
-unsigned neptuneColorTexture = 0;
-unsigned uranusColorTexture = 0;
 unsigned mercuryColorTexture = 0;
+unsigned venusColorTexture = 0;
+unsigned earthColorTexture = 0;
+unsigned marsColorTexture = 0;
+unsigned jupiterColorTexture = 0;
+unsigned saturnColorTexture = 0;
+unsigned uranusColorTexture = 0;
+unsigned neptuneColorTexture = 0;
 unsigned moonColorTexture = 0;
-unsigned skyColorTexture = 0;
 
-unsigned colorTextureUniformLocation = 0;
+unsigned sunNormalTexture = 0;
+unsigned mercuryNormalTexture = 0;
+unsigned venusNormalTexture = 0;
+unsigned earthNormalTexture = 0;
+unsigned marsNormalTexture = 0;
+unsigned jupiterNormalTexture = 0;
+unsigned saturnNormalTexture = 0;
+unsigned uranusNormalTexture = 0;
+unsigned neptuneNormalTexture = 0;
+unsigned moonNormalTexture = 0;
+
+unsigned skySphereColorTexture = 0;
+unsigned skySphereNormalTexture = 0;
 
 bool useToonShader = 0;
 //the three different matrices for projection, viewing and model transforming
@@ -177,6 +189,7 @@ void draw(void)
 
 	//translation
 	float distanceConstant = 10.0f;
+	
 	float sunTranslation = 0.0 * distanceConstant;
 	float mercuryTranslation = 0.4 * distanceConstant;
 	float venusTranslation = 0.7 * distanceConstant;
@@ -188,7 +201,6 @@ void draw(void)
 	float neptuneTranslation = 3.3 * distanceConstant;
 
 	//scaling
-	float skyScaling = 100.0f;
 	float sunScaling = 4.0f;
 	float mercuryScaling = 0.383;
 	float venusScaling = 0.949;
@@ -217,25 +229,37 @@ void draw(void)
 	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
 	glUniform1i(useToonShaderUniformLocation, useToonShader);
+
 	glUniform1i(colorTextureUniformLocation, 0);
+	glUniform1i(normalTextureUniformLocation, 1);
 
+	//create the planet transformation matrices
+	//drawSkySphere
+	//rotate the sun around its own axis
+	//modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(planetOwnRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
+	//scale the skySphere
+	modelTransformationStack.pushMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(1500.0f)));
+	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), 180.0f, glm::vec3(0.0, 1.0, 0.0f)));
+	modelTransformationStack.pushMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(camera_position[0], camera_position[1], camera_position[2])));
+	//rotate it slowly around the y-axis
+	//modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(sunRotation), glm::vec3(0.0f, 1.0f, 0.0f)));
 
-	//Skysphere
-	//sky
-	//rotate the sky around its own axis
-	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), (float)(0), glm::vec3(0.0f, 1.0f, 0.0f)));
-	//scale the sky
-	modelTransformationStack.pushMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(skyScaling)));
-
-	planetColor[0] = 0.0;
-	planetColor[1] = 0.0;
+	//yellow
+	planetColor[0] = 3.0;
+	planetColor[1] = 3.0;
 	planetColor[2] = 0.0;
-	//draw the geometry
+
+	//skyspherecolor texture
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, skyColorTexture);
+	glBindTexture(GL_TEXTURE_2D, skySphereColorTexture);
+	//skyspherenormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, skySphereNormalTexture);
+	//draw the geometry
 	drawSun(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
+
 
 	//create the planet transformation matrices
 	//sun 
@@ -250,9 +274,15 @@ void draw(void)
 	planetColor[0] = 3.0;
 	planetColor[1] = 3.0;
 	planetColor[2] = 0.0;
-	//draw the geometry
+
+	//suncolor texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, sunColorTexture);
+	//sunnormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, sunNormalTexture);
+
+	//draw the geometry
 	drawSun(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
@@ -268,9 +298,14 @@ void draw(void)
 	planetColor[0] = 0.5;
 	planetColor[1] = 0.5;
 	planetColor[2] = 0.5;
-	//draw the geometry
+
+	//mercurycolor texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mercuryColorTexture);
+	//mercurynormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, mercuryNormalTexture);
+	//draw the geometry
 	drawPlanet(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
@@ -286,9 +321,15 @@ void draw(void)
 	planetColor[0] = 0.8;
 	planetColor[1] = 0.6;
 	planetColor[2] = 0.4;
-	//draw the geometry
+
+	//venuscolor texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, venusColorTexture);
+	//venusnormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, venusNormalTexture);
+
+	//draw the geometry
 	drawPlanet(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
@@ -304,8 +345,14 @@ void draw(void)
 	planetColor[0] = 0.3;
 	planetColor[1] = 0.3;
 	planetColor[2] = 0.7;
+
+	//earth color texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, earthColorTexture);
+	//earthnormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, earthNormalTexture);
+
 	//draw the geometry
 	drawPlanet(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
@@ -324,9 +371,15 @@ void draw(void)
 	planetColor[0] = 0.3;
 	planetColor[1] = 0.3;
 	planetColor[2] = 0.3;
-	//draw the geometry
+
+	//mooncolor texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, moonColorTexture);
+	//moonnormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, moonNormalTexture);
+
+	//draw the geometry
 	drawPlanet(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
@@ -342,9 +395,15 @@ void draw(void)
 	planetColor[0] = 0.6;
 	planetColor[1] = 0.4;
 	planetColor[2] = 0.2;
-	//draw the geometry
+
+	//marscolor texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, marsColorTexture);
+	//marsnormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, marsNormalTexture);
+
+	//draw the geometry
 	drawPlanet(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
@@ -360,9 +419,15 @@ void draw(void)
 	planetColor[0] = 0.75;
 	planetColor[1] = 0.75;
 	planetColor[2] = 0.75;
-	//draw the geometry
+
+	//jupitercolor texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, jupiterColorTexture);
+	//jupiternormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, jupiterNormalTexture);
+
+	//draw the geometry
 	drawPlanet(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
@@ -379,9 +444,15 @@ void draw(void)
 	planetColor[0] = 0.9;
 	planetColor[1] = 0.9;
 	planetColor[2] = 0.7;
-	//draw the geometry
+
+	//saturncolor texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, saturnColorTexture);
+	//saturnnormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, saturnNormalTexture);
+
+	//draw the geometry
 	drawPlanet(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
@@ -397,9 +468,15 @@ void draw(void)
 	planetColor[0] = 0.7;
 	planetColor[1] = 0.98;
 	planetColor[2] = 0.98;
-	//draw the geometry
+
+	//uranuscolor texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, uranusColorTexture);
+	//uranusnormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, uranusNormalTexture);
+
+	//draw the geometry
 	drawPlanet(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
@@ -415,9 +492,15 @@ void draw(void)
 	planetColor[0] = 0.4;
 	planetColor[1] = 0.5;
 	planetColor[2] = 0.8;
-	//draw the geometry
+
+	//neptunecolor texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, neptuneColorTexture);
+	//neptunenormal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, neptuneNormalTexture);
+
+	//draw the geometry
 	drawPlanet(modelTransformationStack.topMatrix(), viewMatrix, planetColor);
 	//clear the transformation stack
 	modelTransformationStack.clear();
@@ -438,6 +521,9 @@ void draw(void)
 	drawStars(modelTransformationStack.topMatrix(), viewMatrix);
 	//reset our transformations
 	modelTransformationStack.clear();
+
+
+
 
 	//scale and rotate the orbit for the mercury
 	modelTransformationStack.pushMatrix(glm::rotate(glm::mat4(1.0f), float(90.0), glm::vec3(1.0, 0.0, 0.0)));
@@ -635,7 +721,7 @@ void setupShader()
 	useToonShaderUniformLocation = glGetUniformLocation(shaderProgram, "useToonShader");
 
 	colorTextureUniformLocation = glGetUniformLocation(shaderProgram, "colorTexture");
-
+	normalTextureUniformLocation = glGetUniformLocation(shaderProgram, "normalTexture");
 	//##
 	//////////////////////////////
 	//create star shader program out of star vertex and star fragment shader
@@ -876,7 +962,7 @@ void loadModel()
 
 void loadTextures()
 {
-	TextureLoader::loadImageToGLTexture(sunColorTexture, "../../../data/textures/sunmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(sunColorTexture, "../../../data/textures/sunmapSaturated2.jpg", GL_RGB8, GL_TEXTURE0);
 	TextureLoader::loadImageToGLTexture(earthColorTexture, "../../../data/textures/earthmap1k.jpg", GL_RGB8, GL_TEXTURE0);
 	TextureLoader::loadImageToGLTexture(marsColorTexture, "../../../data/textures/mars_1k_color.jpg", GL_RGB8, GL_TEXTURE0);
 	TextureLoader::loadImageToGLTexture(jupiterColorTexture , "../../../data/textures/jupitermap.jpg", GL_RGB8, GL_TEXTURE0);
@@ -886,7 +972,20 @@ void loadTextures()
 	TextureLoader::loadImageToGLTexture(mercuryColorTexture, "../../../data/textures/mercurymap.jpg", GL_RGB8, GL_TEXTURE0);
 	TextureLoader::loadImageToGLTexture(neptuneColorTexture, "../../../data/textures/neptunemap.jpg", GL_RGB8, GL_TEXTURE0);
 	TextureLoader::loadImageToGLTexture(moonColorTexture, "../../../data/textures/moonmap.jpg", GL_RGB8, GL_TEXTURE0);
-	TextureLoader::loadImageToGLTexture(skyColorTexture, "../../../data/textures/universe.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(skySphereColorTexture, "../../../data/textures/universe.jpg", GL_RGB8, GL_TEXTURE0);
+
+
+	TextureLoader::loadImageToGLTexture(sunNormalTexture, "../../../data/textures/sunmapSaturated2_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(earthNormalTexture, "../../../data/textures/earthmap1k_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(marsNormalTexture, "../../../data/textures/mars_1k_color_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(jupiterNormalTexture , "../../../data/textures/jupitermap_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(uranusNormalTexture, "../../../data/textures/uranusmap_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(saturnNormalTexture, "../../../data/textures/saturnmap_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(venusNormalTexture, "../../../data/textures/venusmap_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(mercuryNormalTexture, "../../../data/textures/mercurymap_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(neptuneNormalTexture, "../../../data/textures/neptunemap_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(moonNormalTexture, "../../../data/textures/moonmap_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
+	TextureLoader::loadImageToGLTexture(skySphereNormalTexture, "../../../data/textures/universe_bumpmap.jpg", GL_RGB8, GL_TEXTURE0);
 
 }
 
@@ -926,8 +1025,8 @@ void resizeFunction(int Width, int Height)
 	//create a projection matrix 
 	glm::mat4 projectionMatrix = glm::perspective(90.0f, //FOV 60.0°
 		(float)windowWidth / windowHeight, //aspect ratio of the projection
-		1.0f, //near clipping plane
-		100.0f); //far clipping plane
+		0.10f, //near clipping plane
+		1600.0f); //far clipping plane
 
 	glUseProgram(shaderProgram); //bind shader program
 	//upload projection matrix to the shader.
@@ -1051,7 +1150,7 @@ void drawPlanet(glm::mat4 const& model_matrix, glm::mat4 const& view_matrix, flo
 
 	//calculate the normal transfomrations from modelview matrix
 	glm::mat4 normalMatrix = glm::mat4(1.0f);
-	normalMatrix = view_matrix*modelTransformationStack.topMatrix();
+	normalMatrix = view_matrix*model_matrix;
 	normalMatrix = glm::inverse(normalMatrix);
 	normalMatrix = glm::transpose(normalMatrix);
 
@@ -1077,7 +1176,7 @@ void drawSun(glm::mat4 const& model_matrix, glm::mat4 const& view_matrix, float*
 
 	//calculate the normal transfomrations from modelview matrix
 	glm::mat4 normalMatrix = glm::mat4(1.0f);
-	normalMatrix = view_matrix * modelTransformationStack.topMatrix();
+	normalMatrix = glm::mat4(-1.0f) * view_matrix *  model_matrix;
 	normalMatrix = glm::inverse(normalMatrix);
 	normalMatrix = glm::transpose(normalMatrix);
 
